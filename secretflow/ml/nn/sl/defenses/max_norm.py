@@ -20,7 +20,7 @@ class MaxNorm(Callback):
     """
     MaxNorm is a defense method designed to against the label inference attack
     in Vertical Federated Learning and Split Learning: https://arxiv.org/pdf/2102.08504.
-    Maxnorm is a heuristic approach for protecting label by matching the expected squared
+    Maxnorm is a heuristic approach for protecting labels by matching the expected squared
     2-norm of each perturbed gradient to the largest squared 2-norm in a mini-batch and
     adding specific noise only along the gradient direction.
     """
