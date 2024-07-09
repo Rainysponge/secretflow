@@ -12,23 +12,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import numpy as np
 
 from secretflow.ml.nn.callbacks.callback import Callback
 
 
 class MaxNorm(Callback):
     """
-    MaxNorm is a defense method designed to against the label inference attack 
+    MaxNorm is a defense method designed to against the label inference attack
     in Vertical Federated Learning and Split Learning: https://arxiv.org/pdf/2102.08504.
     Maxnorm is a heuristic approach for protecting label by matching the expected squared
     2-norm of each perturbed gradient to the largest squared 2-norm in a mini-batch and
-    adding specific noise only along the gradient direction. 
+    adding specific noise only along the gradient direction.
     """
 
-    def __init__(
-        self, backend: str = "torch", exec_device='cpu', **kwargs
-    ):
+    def __init__(self, backend: str = "torch", exec_device='cpu', **kwargs):
         self.backend = backend.lower()
         self.exec_device = exec_device
         super().__init__(**kwargs)
@@ -48,7 +45,7 @@ class MaxNorm(Callback):
                 max_norm = max(
                     [torch.norm(g, p=2) ** 2 for g in gradient]
                 )  # Find the maximum norm
-                first_dim = (0, )
+                first_dim = (0,)
                 perturbed_gradients = torch.empty(first_dim + tuple(gradient.shape[1:]))
 
                 for g in gradient:
@@ -56,16 +53,15 @@ class MaxNorm(Callback):
                     if norm_g == 0:
                         perturbed_gradients.append(g)
                         continue
-                    sigma_j = (
-                        (max_norm / norm_g - 1).sqrt().item()
-                    )  # Calculate σ
+                    sigma_j = (max_norm / norm_g - 1).sqrt().item()  # Calculate σ
                     noise = torch.normal(mean=0, std=sigma_j, size=g.size()).to(
                         g.device
                     )  # Generate Gaussian noise
                     perturbed_g = g + noise  # Add noise
                     perturbed_g = perturbed_g.unsqueeze(0)
-                    perturbed_gradients = torch.cat((perturbed_gradients, perturbed_g), dim=0)
-
+                    perturbed_gradients = torch.cat(
+                        (perturbed_gradients, perturbed_g), dim=0
+                    )
 
             if gradient is None:
                 raise Exception("No gradient received from label party.")
@@ -73,6 +69,4 @@ class MaxNorm(Callback):
             worker._gradient = perturbed_gradients
             # print("worker._gradient.shape", worker._gradient.shape)
 
-        self._workers[self.device_y].apply(
-            average_gradient
-        )
+        self._workers[self.device_y].apply(average_gradient)

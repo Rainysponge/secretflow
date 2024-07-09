@@ -14,33 +14,21 @@
 
 import numpy as np
 import torch
-from torch import nn
-import pandas as pd
-
-from torchmetrics import AUROC, Accuracy, Precision
-from benchmark_examples.autoattack.applications.base import ModelType
-from benchmark_examples.autoattack.applications.recommendation.criteo.criteo_base import (
-    CriteoBase,
-)
-
 from sklearn.preprocessing import LabelEncoder, MinMaxScaler
-import secretflow as sf
-from torchmetrics import Accuracy
+from torch import nn
+from torchmetrics import AUROC, Accuracy, Precision
 
 from secretflow.data.split import train_test_split
 from secretflow.ml.nn import SLModel
-from secretflow.ml.nn.applications.sl_dnn_torch import DnnBase, DnnFuse
 from secretflow.ml.nn.core.torch import TorchModel, metric_wrapper, optim_wrapper
-from secretflow.ml.nn.sl.defenses.max_norm import MaxNorm
-from secretflow.preprocessing import StandardScaler
-from secretflow.utils.simulation.datasets import (
-    load_criteo_unpartitioned,
-)
+from secretflow.ml.nn.sl.agglayer.agg_method import Concat
 from secretflow.ml.nn.sl.attacks.direction_based_scoring_torch import (
     DirectionBasedScoringAttack,
 )
+from secretflow.ml.nn.sl.defenses.max_norm import MaxNorm
+from secretflow.preprocessing import StandardScaler
 from secretflow.utils.simulation.data.dataframe import create_df
-from secretflow.ml.nn.sl.agglayer.agg_method import Concat
+from secretflow.utils.simulation.datasets import load_criteo_unpartitioned
 from tests.ml.nn.sl.attack.model_def import (
     WideDeepBottomAlice,
     WideDeepBottomBob,
